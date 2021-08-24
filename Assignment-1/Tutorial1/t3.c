@@ -13,9 +13,9 @@ int main()
   fd = open("foo.txt", O_RDONLY); 
   if (fd < 0) { perror("r1"); exit(1); } 
   
-  sz = read(fd, BUFFER, 10); 
+  sz = read(fd, BUFFER, -3); 
   printf("called read(%d, c, 10).  returned that"
          " %d bytes  were read.\n", fd, sz); 
-  BUFFER[sz] = '\0'; 
+  // BUFFER[sz -3 ] = '\0'; 
   printf("Those bytes are as follows: %s\n", BUFFER); 
 } 

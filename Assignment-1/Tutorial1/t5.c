@@ -17,7 +17,7 @@ main()
   } 
   
   // writing to the file
-  sz = write(fd, "hello world1234\n", strlen("hello world1234\n")); 
+  sz = write(1, "hello world1234\n", strlen("hello world1234\n")); 
   
   printf("called write(% d, \"hello world\\n\", %d)."
     " It returned %d\n", fd, strlen("hello world\n"), sz); 

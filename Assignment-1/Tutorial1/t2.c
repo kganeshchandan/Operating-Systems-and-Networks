@@ -4,10 +4,11 @@
 int main() 
 { 
     // opening the file
-    int fd1 = open("foo.txt", O_RDONLY); 
+    int fd2 = open("foo.txt", O_RDONLY | O_CREAT);
+    int fd1 = open("foo2.txt", O_RDONLY ); 
 
     // error handling
-    if (fd1 < 0)  
+    if (fd2 < 0)  
     { 
         perror("c1"); 
         exit(1); 

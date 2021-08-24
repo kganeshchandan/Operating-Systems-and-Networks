@@ -8,10 +8,10 @@ int main()
 {      
     // if file does not have in directory  
     // then file foo.txt is created. 
-    int fd = open("foo.txt", O_RDONLY | O_CREAT);  
+    int fd = open("foo1.txt", O_RDONLY | O_CREAT, 0644);  
       
     // printing the file descriptor
-    printf("fd = %d/n", fd); 
+    printf("fd = %d\n", fd); 
 
     // error handling 
     if (fd ==-1) 
