@@ -49,9 +49,10 @@ int main(int argc, char *argv[])
 
     // printf("%ld\n", input_file_len);
 
-    int chunk_size = 1e3;
-    if (input_file_len > 1e9)
-        chunk_size = 1e6;
+    int chunk_size = input_file_len;
+    if (input_file_len > 1e7)
+        chunk_size = 5 * 1e6;
+    // printf("%ld\n", input_file_len);
     char *BUFFER = (char *)malloc(chunk_size);
     char *REVERSED_BUFFER = (char *)malloc(chunk_size);
     float percentage = 0.0;
