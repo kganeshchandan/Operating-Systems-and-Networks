@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-extern int errno;
+// extern int errno;
 
 int main(int argc, char *argv[])
 {

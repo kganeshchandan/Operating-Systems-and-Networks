@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
 
     int len_to_rev = input_file_len / (int)no_of_parts;
     int to_read = len_to_rev;
-    int chunk_size = 1e3;
-    if (input_file_len > 1e9)
+    int chunk_size = len_to_rev;
+    if (len_to_rev > 1e7)
         chunk_size = 1e6;
 
     char *BUFFER = (char *)malloc(chunk_size);

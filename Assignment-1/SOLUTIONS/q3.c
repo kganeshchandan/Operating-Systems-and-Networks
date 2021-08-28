@@ -66,7 +66,9 @@ int main(int argc, char *argv[])
     stat(file_1, &sb);
     if ((sb.st_mode & S_IFMT) == S_IFREG)
     {
-        printf("Directory is created: Yes\n");
+        char buffer[100] = "";
+        sprintf(buffer, "Output_file_1 is created: Yes\n");
+        write(1, buffer, strlen(buffer));
         unsigned code = sb.st_mode;
         char perms[10];
         sprintf(perms, "%o", code);
@@ -89,9 +91,15 @@ int main(int argc, char *argv[])
                 int t = yesorno(i, j, &perms);
                 char bool[3];
                 if (t == 1)
-                    printf("%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_1, "Yes");
+                {
+                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_1, "Yes");
+                    write(1, buffer, strlen(buffer));
+                }
                 else
-                    printf("%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_1, "No");
+                {
+                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_1, "No");
+                    write(1, buffer, strlen(buffer));
+                }
             }
         }
     }
@@ -103,7 +111,9 @@ int main(int argc, char *argv[])
     stat(file_2, &sb2);
     if ((sb.st_mode & S_IFMT) == S_IFREG)
     {
-        printf("Directory is created: Yes\n");
+        char buffer[100] = "";
+        sprintf(buffer, "Output_file_2 is created: Yes\n");
+        write(1, buffer, strlen(buffer));
         unsigned code = sb2.st_mode;
         char perms[10];
         sprintf(perms, "%o", code);
@@ -117,7 +127,6 @@ int main(int argc, char *argv[])
             "read",
             "write",
             "execute"};
-
         for (int i = 0; i < 3; i++)
         {
             printf("\n");
@@ -126,9 +135,15 @@ int main(int argc, char *argv[])
                 int t = yesorno(i, j, &perms);
                 char bool[3];
                 if (t == 1)
-                    printf("%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_2, "Yes");
+                {
+                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_2, "Yes");
+                    write(1, buffer, strlen(buffer));
+                }
                 else
-                    printf("%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_2, "No");
+                {
+                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_2, "No");
+                    write(1, buffer, strlen(buffer));
+                }
             }
         }
     }
@@ -140,7 +155,9 @@ int main(int argc, char *argv[])
     stat(dir, &sb3);
     if ((sb3.st_mode & S_IFMT) == S_IFDIR)
     {
-        printf("Directory is created: Yes\n");
+        char buffer[100] = "";
+        sprintf(buffer, "Directory is created: Yes\n");
+        write(1, buffer, strlen(buffer));
         unsigned code = sb3.st_mode;
         char perms[10];
         sprintf(perms, "%o", code);
@@ -163,9 +180,15 @@ int main(int argc, char *argv[])
                 int t = yesorno(i, j, &perms);
                 char bool[3];
                 if (t == 1)
-                    printf("%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, dir, "Yes");
+                {
+                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, dir, "Yes");
+                    write(1, buffer, strlen(buffer));
+                }
                 else
-                    printf("%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, dir, "No");
+                {
+                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, dir, "No");
+                    write(1, buffer, strlen(buffer));
+                }
             }
         }
     }
