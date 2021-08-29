@@ -1,6 +1,7 @@
 # Operating-Systems-and-Networks
 ## q1:
 Run the q1.c file with the path to the file to be reversed as argument 
+
 ``` gcc q1.c ```
 
 ``` ./a.out <path to file> ```
