@@ -8,7 +8,6 @@
 #include <errno.h>
 int yesorno(int owner, int action, char *perms)
 {
-    // printf("perms %s\n", perms);
     int len = strlen(perms);
     char user_p = perms[len - 3] - '0';
     user_p = (int)user_p;
@@ -26,7 +25,6 @@ int yesorno(int owner, int action, char *perms)
         cmp = group_p;
     if (owner == 2)
         cmp = other_p;
-    // printf("%d %d %d\n", owner, cmp, len);
     for (int i = 0; i < 4; i++)
     {
         if (mat[action][i] == cmp)
@@ -47,10 +45,25 @@ int main(int argc, char *argv[])
     int fd = open(argv[1], O_RDONLY);
     if (fd < 0)
     {
-        perror("program");
+        perror(argv[1]);
         return 0;
     }
-    char *file = argv[1];
+    char file[strlen(argv[1])];
+    long long int k = 0;
+    for (long long int i = 0; i < strlen(argv[1]); i++)
+    {
+        file[k] = argv[1][i];
+        if (argv[1][i] == '/')
+        {
+            k = 0;
+        }
+        else
+        {
+            k = k + 1;
+        }
+    }
+    file[k] = '\0';
+    // char *file = argv[1];
     char dir[10000] = "Assignment";
     char file_1[10000] = "Assignment/1_";
     char file_2[10000] = "Assignment/2_";
@@ -61,7 +74,7 @@ int main(int argc, char *argv[])
     // char file_2_name[100] = "2_";
     // strcat(file_1_name, argv[1]);
     // strcat(file_2_name, argv[1]);
-
+    char empty_line = "";
     struct stat sb;
     stat(file_1, &sb);
     if ((sb.st_mode & S_IFMT) == S_IFREG)
@@ -85,31 +98,31 @@ int main(int argc, char *argv[])
 
         for (int i = 0; i < 3; i++)
         {
-            printf("\n");
+            write(1, "\n", strlen("\n"));
             for (int j = 0; j < 3; j++)
             {
                 int t = yesorno(i, j, &perms);
                 char bool[3];
                 if (t == 1)
                 {
-                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_1, "Yes");
+                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, "Output_file_1", "Yes");
                     write(1, buffer, strlen(buffer));
                 }
                 else
                 {
-                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_1, "No");
+                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, "Output_file_1", "No");
                     write(1, buffer, strlen(buffer));
                 }
             }
         }
     }
     else
-        perror("Error");
+        perror("Output_file_1");
 
-    printf("\n");
+    write(1, "\n", strlen("\n"));
     struct stat sb2;
     stat(file_2, &sb2);
-    if ((sb.st_mode & S_IFMT) == S_IFREG)
+    if ((sb2.st_mode & S_IFMT) == S_IFREG)
     {
         char buffer[100] = "";
         sprintf(buffer, "Output_file_2 is created: Yes\n");
@@ -129,28 +142,28 @@ int main(int argc, char *argv[])
             "execute"};
         for (int i = 0; i < 3; i++)
         {
-            printf("\n");
+            write(1, "\n", strlen("\n"));
             for (int j = 0; j < 3; j++)
             {
                 int t = yesorno(i, j, &perms);
                 char bool[3];
                 if (t == 1)
                 {
-                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_2, "Yes");
+                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, "Output_file_2", "Yes");
                     write(1, buffer, strlen(buffer));
                 }
                 else
                 {
-                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, file_2, "No");
+                    sprintf(buffer, "%s has %s permission on %s : %s\n", owner_arr + i, action_arr + j, "Output_file_2", "No");
                     write(1, buffer, strlen(buffer));
                 }
             }
         }
     }
     else
-        perror("Error");
+        perror("Output_file_2");
 
-    printf("\n");
+    write(1, "\n", strlen("\n"));
     struct stat sb3;
     stat(dir, &sb3);
     if ((sb3.st_mode & S_IFMT) == S_IFDIR)
@@ -174,7 +187,7 @@ int main(int argc, char *argv[])
 
         for (int i = 0; i < 3; i++)
         {
-            printf("\n");
+            write(1, "\n", strlen("\n"));
             for (int j = 0; j < 3; j++)
             {
                 int t = yesorno(i, j, &perms);
@@ -193,5 +206,5 @@ int main(int argc, char *argv[])
         }
     }
     else
-        perror("Error");
+        perror("Assignment");
 }
