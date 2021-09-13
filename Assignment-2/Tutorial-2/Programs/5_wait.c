@@ -11,6 +11,7 @@ int main()
 	if (forkReturn == 0)
 	{
 		// Child process
+		wait(NULL);
 		for (i = 0; i < loopsize; i++)
 		{
 			printf("child: %d\n", i + 1);
