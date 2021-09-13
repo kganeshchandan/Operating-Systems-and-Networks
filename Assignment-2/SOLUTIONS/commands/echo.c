@@ -1,4 +1,12 @@
-void echo(char *str)
+#include "echo.h"
+#include "stdio.h"
+void echo(char *arr[])
 {
-    printf(str);
+    int i = 1;
+    while (arr[i] != NULL)
+    {
+        printf("%s ", arr[i]);
+        i++;
+    }
+    printf("\n");
 }

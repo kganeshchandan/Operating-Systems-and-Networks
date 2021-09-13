@@ -8,9 +8,10 @@ int main()
 {
     clearscreen();
     find_pwd(PATH_CHD);
-    find_pwd(PATH_CWD);
+
     while (1)
     {
+        find_pwd(PATH_CWD);
         char INPUT_LINE[MAX_INP_LEN];
         printf("%s", getpromptline(PATH_CHD, PATH_CWD));
         fgets(INPUT_LINE, MAX_INP_LEN, stdin);

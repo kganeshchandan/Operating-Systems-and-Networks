@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "commands/echo.h"
+#include "commands/cd.h"
+
 void clearscreen()
 {
 }
@@ -57,7 +60,42 @@ char *getpromptline(char *chd, char *cwd)
     return username;
 }
 
+void execute_command(char *COMMAND)
+{
+    char *c_arr[10];
+    int i = 0;
+
+    c_arr[0] = strtok(COMMAND, " \t");
+    // printf(":%s\n", c_arr[0]);
+    while (c_arr[i] != NULL)
+    {
+        // printf(":%s", c_arr[0]);
+        c_arr[++i] = strtok(NULL, " \t");
+    }
+
+    if (strcmp(c_arr[0], "echo") == 0)
+        echo(c_arr);
+    if (strcmp(c_arr[0], "cd") == 0)
+        cd(c_arr);
+}
+
 void process_input(char *input)
 {
-    printf("%s", input);
+    char *arr[10];
+    int i = 0;
+    arr[0] = strtok(input, ";\n");
+    while (arr[i] != NULL)
+    {
+        i = i + 1;
+        // printf("%s\n", arr[i]);
+        arr[i] = strtok(NULL, ";\n");
+    }
+    int j = 0;
+    while (arr[j] != NULL)
+    {
+        // printf(":::::::;;%s|\n", arr[j]);
+
+        execute_command(arr[j]);
+        j++;
+    }
 }
