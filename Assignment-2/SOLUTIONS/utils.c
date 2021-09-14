@@ -1,6 +1,7 @@
 #include "utils.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "commands/echo.h"
@@ -11,11 +12,14 @@
 char HOME_PATH[1024] = "";
 char *HIST_ARR[20][1024];
 
-void history()
+void history(char *arr[])
 {
-    int hash_arr[20] = {0};
-    // printf("history\n");
-    for (int i = 0; i < 20; i++)
+    char text[10] = "10";
+    if (arr[1] != NULL)
+        strcpy(text, arr[1]);
+    int num = atoi(text);
+    // printf("num%d\n", num);
+    for (int i = 20 - num; i < 20; i++)
     {
         char temp[256];
         strcpy(temp, HIST_ARR + i);
@@ -120,7 +124,7 @@ void execute_command(char *COMMAND)
     {
         while (c_arr[i] != NULL)
         {
-            // printf(":%s", c_arr[0]);
+            // printf(":%s\n", c_arr[i]);
             c_arr[++i] = strtok(NULL, " \t");
         }
 
@@ -131,7 +135,7 @@ void execute_command(char *COMMAND)
         if (strcmp(c_arr[0], "pwd") == 0)
             pwd(c_arr, HOME_PATH);
         if (strcmp(c_arr[0], "history") == 0)
-            history();
+            history(c_arr);
     }
 }
 
