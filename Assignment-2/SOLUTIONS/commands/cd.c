@@ -10,24 +10,16 @@ void cd(char *arr[], char *home)
     if (arr[1] != NULL)
     {
         // printf("CD-ing to |%s|\n", arr[1]);
-        if (strcmp(arr[1], "..") == 0)
+        if ((strcmp(arr[1], "..") == 0) | (strcmp(arr[1], ".") == 0))
         {
             getcwd(most_recent_dir, sizeof(most_recent_dir));
-            chdir("..");
+            chdir(arr[1]);
         }
-
-        else if (strcmp(arr[1], ".") == 0)
-        {
-            getcwd(most_recent_dir, sizeof(most_recent_dir));
-            chdir(".");
-        }
-
         else if (strcmp(arr[1], "~") == 0)
         {
             getcwd(most_recent_dir, sizeof(most_recent_dir));
             chdir(home);
         }
-
         else if (strcmp(arr[1], "-") == 0)
         {
             char temp[1024];
@@ -38,7 +30,6 @@ void cd(char *arr[], char *home)
             printf("%s\n", path);
             chdir(temp);
         }
-
         else
         {
             char path[1024];

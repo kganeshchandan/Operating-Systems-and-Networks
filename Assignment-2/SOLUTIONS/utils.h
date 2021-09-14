@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+void init_hist();
 void clearscreen();
 
 char *getpromptline(char *chd, char *cwd);

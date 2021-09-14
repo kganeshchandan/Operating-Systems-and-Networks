@@ -5,9 +5,49 @@
 
 #include "commands/echo.h"
 #include "commands/cd.h"
+#include "commands/pwd.h"
+// #include "commands/history.h"
 
 char HOME_PATH[1024] = "";
+char *HIST_ARR[20][1024];
 
+void history()
+{
+    int hash_arr[20] = {0};
+    // printf("history\n");
+    for (int i = 0; i < 20; i++)
+    {
+        char temp[256];
+        strcpy(temp, HIST_ARR + i);
+        if (strcmp(temp, "empty") != 0)
+            printf("%s", temp);
+    }
+}
+void init_hist()
+{
+    for (int i = 0; i < 20; i++)
+        strcpy(HIST_ARR[i], "empty");
+}
+void add_to_hist(char *input)
+{
+    char cpy_inp[1024];
+    strcpy(cpy_inp, input);
+    char *temp = strtok(cpy_inp, " \t\n");
+    int b = 0;
+    while (temp != NULL)
+    {
+        b = 1;
+        temp = strtok(NULL, " \t\n");
+    }
+    if (b == 1)
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            strcpy(HIST_ARR[i], HIST_ARR[i + 1]);
+        }
+        strcpy(HIST_ARR[19], input);
+    }
+}
 void clearscreen()
 {
 }
@@ -88,14 +128,25 @@ void execute_command(char *COMMAND)
             echo(c_arr);
         if (strcmp(c_arr[0], "cd") == 0)
             cd(c_arr, HOME_PATH);
+        if (strcmp(c_arr[0], "pwd") == 0)
+            pwd(c_arr, HOME_PATH);
+        if (strcmp(c_arr[0], "history") == 0)
+            history();
     }
 }
 
 void process_input(char *input)
 {
+
     char *arr[10];
+    char hist_input[1024];
+    strcpy(hist_input, input);
+
     int i = 0;
     arr[0] = strtok(input, ";\n");
+
+    add_to_hist(hist_input);
+
     while (arr[i] != NULL)
     {
         i = i + 1;
