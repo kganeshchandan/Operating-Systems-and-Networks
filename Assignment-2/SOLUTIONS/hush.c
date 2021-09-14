@@ -8,6 +8,7 @@ int main()
 {
     clearscreen();
     find_pwd(PATH_CHD);
+    find_hd(PATH_CHD);
 
     while (1)
     {

@@ -6,6 +6,8 @@
 #include "commands/echo.h"
 #include "commands/cd.h"
 
+char HOME_PATH[1024] = "";
+
 void clearscreen()
 {
 }
@@ -21,6 +23,12 @@ void find_pwd(char *STR)
     getcwd(temp, sizeof(temp));
     strcpy(STR, temp);
 }
+void find_hd(char *STR)
+{
+    getcwd(HOME_PATH, sizeof(HOME_PATH));
+    strcpy(STR, HOME_PATH);
+}
+
 void get_path_from_home(char *path, char *chd, char *cwd)
 {
     if (strlen(cwd) >= strlen(chd))
@@ -67,16 +75,20 @@ void execute_command(char *COMMAND)
 
     c_arr[0] = strtok(COMMAND, " \t");
     // printf(":%s\n", c_arr[0]);
-    while (c_arr[i] != NULL)
-    {
-        // printf(":%s", c_arr[0]);
-        c_arr[++i] = strtok(NULL, " \t");
-    }
 
-    if (strcmp(c_arr[0], "echo") == 0)
-        echo(c_arr);
-    if (strcmp(c_arr[0], "cd") == 0)
-        cd(c_arr);
+    if (c_arr[0] != NULL)
+    {
+        while (c_arr[i] != NULL)
+        {
+            // printf(":%s", c_arr[0]);
+            c_arr[++i] = strtok(NULL, " \t");
+        }
+
+        if (strcmp(c_arr[0], "echo") == 0)
+            echo(c_arr);
+        if (strcmp(c_arr[0], "cd") == 0)
+            cd(c_arr, HOME_PATH);
+    }
 }
 
 void process_input(char *input)
