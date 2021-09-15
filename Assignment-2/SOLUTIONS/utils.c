@@ -7,6 +7,8 @@
 #include "commands/echo.h"
 #include "commands/cd.h"
 #include "commands/pwd.h"
+#include "commands/repeat.h"
+#include "commands/fexec.h"
 // #include "commands/history.h"
 
 char HOME_PATH[1024] = "";
@@ -14,43 +16,43 @@ char *HIST_ARR[20][1024];
 
 void history(char *arr[])
 {
-    char text[10] = "10";
-    if (arr[1] != NULL)
-        strcpy(text, arr[1]);
-    int num = atoi(text);
-    // printf("num%d\n", num);
-    for (int i = 20 - num; i < 20; i++)
-    {
-        char temp[256];
-        strcpy(temp, HIST_ARR + i);
-        if (strcmp(temp, "empty") != 0)
-            printf("%s", temp);
-    }
+    // char text[10] = "10";
+    // if (arr[1] != NULL)
+    //     strcpy(text, arr[1]);
+    // int num = atoi(text);
+    // // printf("num%d\n", num);
+    // for (int i = 20 - num; i < 20; i++)
+    // {
+    //     char temp[256];
+    //     strcpy(temp, HIST_ARR + i);
+    //     if (strcmp(temp, "empty") != 0)
+    //         printf("%s", temp);
+    // }
 }
 void init_hist()
 {
-    for (int i = 0; i < 20; i++)
-        strcpy(HIST_ARR[i], "empty");
+    // for (int i = 0; i < 20; i++)
+    //     strcpy(HIST_ARR[i], "empty");
 }
 void add_to_hist(char *input)
 {
-    char cpy_inp[1024];
-    strcpy(cpy_inp, input);
-    char *temp = strtok(cpy_inp, " \t\n");
-    int b = 0;
-    while (temp != NULL)
-    {
-        b = 1;
-        temp = strtok(NULL, " \t\n");
-    }
-    if (b == 1)
-    {
-        for (int i = 0; i < 20; i++)
-        {
-            strcpy(HIST_ARR[i], HIST_ARR[i + 1]);
-        }
-        strcpy(HIST_ARR[19], input);
-    }
+    // char cpy_inp[1024];
+    // strcpy(cpy_inp, input);
+    // char *temp = strtok(cpy_inp, " \t\n");
+    // int b = 0;
+    // while (temp != NULL)
+    // {
+    //     b = 1;
+    //     temp = strtok(NULL, " \t\n");
+    // }
+    // if (b == 1)
+    // {
+    //     for (int i = 0; i < 20; i++)
+    //     {
+    //         strcpy(HIST_ARR[i], HIST_ARR[i + 1]);
+    //     }
+    //     strcpy(HIST_ARR[19], input);
+    // }
 }
 void clearscreen()
 {
@@ -130,12 +132,16 @@ void execute_command(char *COMMAND)
 
         if (strcmp(c_arr[0], "echo") == 0)
             echo(c_arr);
-        if (strcmp(c_arr[0], "cd") == 0)
+        else if (strcmp(c_arr[0], "cd") == 0)
             cd(c_arr, HOME_PATH);
-        if (strcmp(c_arr[0], "pwd") == 0)
+        else if (strcmp(c_arr[0], "pwd") == 0)
             pwd(c_arr, HOME_PATH);
-        if (strcmp(c_arr[0], "history") == 0)
+        else if (strcmp(c_arr[0], "history") == 0)
             history(c_arr);
+        else if (strcmp(c_arr[0], "repeat") == 0)
+            repeat(c_arr);
+        else
+            fexec(c_arr);
     }
 }
 
@@ -143,13 +149,11 @@ void process_input(char *input)
 {
 
     char *arr[10];
-    char hist_input[1024];
+    char hist_input[1024] = "";
     strcpy(hist_input, input);
 
     int i = 0;
     arr[0] = strtok(input, ";\n");
-
-    add_to_hist(hist_input);
 
     while (arr[i] != NULL)
     {
@@ -165,4 +169,5 @@ void process_input(char *input)
         execute_command(arr[j]);
         j++;
     }
+    // add_to_hist(hist_input);
 }

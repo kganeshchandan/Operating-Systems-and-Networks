@@ -9,7 +9,7 @@ void cd(char *arr[], char *home)
 {
     if (arr[1] != NULL)
     {
-        // printf("CD-ing to |%s|\n", arr[1]);
+        printf("CD-ing to |%s|\n", arr[1]);
         if ((strcmp(arr[1], "..") == 0) | (strcmp(arr[1], ".") == 0))
         {
             getcwd(most_recent_dir, sizeof(most_recent_dir));
