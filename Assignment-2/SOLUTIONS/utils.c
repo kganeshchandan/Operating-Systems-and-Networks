@@ -9,6 +9,8 @@
 #include "commands/pwd.h"
 #include "commands/repeat.h"
 #include "commands/fexec.h"
+#include "commands/bexec.h"
+#include "commands/pinfo.h"
 // #include "commands/history.h"
 
 char HOME_PATH[1024] = "";
@@ -77,11 +79,11 @@ void find_hd(char *STR)
 
 void get_path_from_home(char *path, char *chd, char *cwd)
 {
-    if (strlen(cwd) >= strlen(chd))
+    if (strlen(cwd) >= strlen(HOME_PATH))
     {
         int k = 1;
         char new_path[256] = "~";
-        for (int i = strlen(chd); i < strlen(cwd); i++)
+        for (int i = strlen(HOME_PATH); i < strlen(cwd); i++)
         {
             new_path[k] = cwd[i];
             k++;
@@ -129,17 +131,23 @@ void execute_command(char *COMMAND)
             // printf(":%s\n", c_arr[i]);
             c_arr[++i] = strtok(NULL, " \t");
         }
-
+        // printf("last word%s\n", c_arr[i - 1]);
         if (strcmp(c_arr[0], "echo") == 0)
             echo(c_arr);
         else if (strcmp(c_arr[0], "cd") == 0)
             cd(c_arr, HOME_PATH);
         else if (strcmp(c_arr[0], "pwd") == 0)
             pwd(c_arr, HOME_PATH);
+        else if ((i > 1) & (strcmp(c_arr[i - 1], "&") == 0))
+        {
+            bexec(c_arr);
+        }
         else if (strcmp(c_arr[0], "history") == 0)
             history(c_arr);
         else if (strcmp(c_arr[0], "repeat") == 0)
             repeat(c_arr);
+        else if (strcmp(c_arr[0], "pinfo") == 0)
+            pinfo(c_arr);
         else
             fexec(c_arr);
     }
