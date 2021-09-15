@@ -6,7 +6,7 @@
 
 void bexec(char *arr[])
 {
-    printf("running in BG\n");
+    // printf("running in BG\n");
     int forkReturn = fork();
     // printf("BOTH\n");
     if (forkReturn == 0)

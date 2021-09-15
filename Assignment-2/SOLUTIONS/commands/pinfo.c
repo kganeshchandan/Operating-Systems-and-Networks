@@ -23,7 +23,7 @@ void pinfo(char *arr[])
     strcat(proc_path, "/stat");
     strcat(exe_path, "/exe");
 
-    printf("%s\n", proc_path);
+    // printf("%s\n", proc_path);
     FILE *file = fopen(proc_path, "r");
     if (file != NULL)
     {
@@ -49,10 +49,10 @@ void pinfo(char *arr[])
         char buff[1024] = "";
         if (read_int != -1)
         {
-            // find_pwd(buff);
-            // get_path_from_home(link, "", buff);
+            find_pwd(buff);
+            get_path_from_home(buff, "", link);
             // if strcmp(buff, )
-            printf("Executable Path --%s\n", link);
+            printf("Executable Path --%s\n", buff);
         }
         else
             printf("Executable Path --%s\n", "absent");
