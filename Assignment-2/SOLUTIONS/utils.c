@@ -18,43 +18,73 @@ char *HIST_ARR[20][1024];
 
 void history(char *arr[])
 {
-    // char text[10] = "10";
-    // if (arr[1] != NULL)
-    //     strcpy(text, arr[1]);
-    // int num = atoi(text);
-    // // printf("num%d\n", num);
-    // for (int i = 20 - num; i < 20; i++)
-    // {
-    //     char temp[256];
-    //     strcpy(temp, HIST_ARR + i);
-    //     if (strcmp(temp, "empty") != 0)
-    //         printf("%s", temp);
-    // }
+    char hist_path[1024];
+    strcat(hist_path, HOME_PATH);
+    strcat(hist_path, "/history.txt");
+
+    // for (int k =)
 }
 void init_hist()
 {
-    // for (int i = 0; i < 20; i++)
-    //     strcpy(HIST_ARR[i], "empty");
+    char hist_path[1024] = "";
+    strcat(hist_path, HOME_PATH);
+    strcat(hist_path, "/history.txt");
+
+    FILE *hist_file;
+    hist_file = fopen(hist_path, "w");
+
+    fprintf(hist_file, "%s", "");
+    fclose(hist_file);
+    hist_file = fopen(hist_path, "a");
+    for (int i = 0; i < 20; i++)
+        fprintf(hist_file, "%s\n", "empty");
+    fclose(hist_file);
 }
 void add_to_hist(char *input)
 {
-    // char cpy_inp[1024];
-    // strcpy(cpy_inp, input);
-    // char *temp = strtok(cpy_inp, " \t\n");
-    // int b = 0;
-    // while (temp != NULL)
-    // {
-    //     b = 1;
-    //     temp = strtok(NULL, " \t\n");
-    // }
-    // if (b == 1)
-    // {
-    //     for (int i = 0; i < 20; i++)
-    //     {
-    //         strcpy(HIST_ARR[i], HIST_ARR[i + 1]);
-    //     }
-    //     strcpy(HIST_ARR[19], input);
-    // }
+    char hist_path[1024] = "";
+    strcat(hist_path, HOME_PATH);
+    strcat(hist_path, "/history.txt");
+
+    FILE *hist_file;
+    hist_file = fopen(hist_path, "a");
+    char cpy_inp[1024];
+    strcpy(cpy_inp, input);
+    fprintf(hist_file, "%s", input);
+    fclose(hist_file);
+
+    hist_file = fopen(hist_path, "r+");
+    char history_text[100005] = "";
+
+    fseek(hist_file, 0, SEEK_END);
+    int l = ftell(hist_file);
+    fseek(hist_file, 0, SEEK_SET);
+    fread(history_text, 1, l, hist_file);
+    // printf("%s", history_text);
+    char *token[30], *new_token[30];
+    token[0] = strtok(history_text, "\n");
+    int i = 0;
+    while (token[i] != NULL)
+    {
+        // printf("::%s\n", token[i]);
+        token[++i] = strtok(NULL, "\n");
+    }
+    fclose(hist_file);
+    hist_file = fopen(hist_path, "w");
+    fprintf(hist_file, "%s", "");
+    fclose(hist_file);
+
+    char buffer[10005] = "";
+    int j = 1;
+    // printf(" i is %d\n", i);
+    hist_file = fopen(hist_path, "a");
+    while (j < i)
+    {
+        fprintf(hist_file, "%s\n", token[j]);
+        j++;
+    }
+
+    fclose(hist_file);
 }
 void clearscreen()
 {
@@ -177,5 +207,5 @@ void process_input(char *input)
         execute_command(arr[j]);
         j++;
     }
-    // add_to_hist(hist_input);
+    add_to_hist(hist_input);
 }
