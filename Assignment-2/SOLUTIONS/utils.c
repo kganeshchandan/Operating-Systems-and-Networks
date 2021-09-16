@@ -12,6 +12,7 @@
 #include "commands/bexec.h"
 #include "commands/pinfo.h"
 #include "commands/history.h"
+#include "commands/ls.h"
 
 char HOME_PATH[1024] = "";
 char *HIST_ARR[20][1024];
@@ -135,6 +136,8 @@ void execute_command(char *COMMAND)
             repeat(c_arr);
         else if (strcmp(c_arr[0], "pinfo") == 0)
             pinfo(c_arr);
+        else if (strcmp(c_arr[0], "ls") == 0)
+            ls(c_arr);
         else
             fexec(c_arr);
     }
