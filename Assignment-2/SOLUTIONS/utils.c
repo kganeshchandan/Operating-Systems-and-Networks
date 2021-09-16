@@ -15,45 +15,92 @@
 
 char HOME_PATH[1024] = "";
 char *HIST_ARR[20][1024];
+char HIST_PATH[1024] = "/var/tmp/history.txt";
 
 void history(char *arr[])
 {
-    char hist_path[1024];
-    strcat(hist_path, HOME_PATH);
-    strcat(hist_path, "/history.txt");
+    // char HIST_PATH[1024] = "";
+    // strcat(HIST_PATH, HOME_PATH);
+    // strcat(HIST_PATH, "/history.txt");
 
-    // for (int k =)
+    FILE *hist_file;
+    hist_file = fopen(HIST_PATH, "r+");
+    char history_text[100005] = "";
+
+    fseek(hist_file, 0, SEEK_END);
+    int l = ftell(hist_file);
+    fseek(hist_file, 0, SEEK_SET);
+    fread(history_text, 1, l, hist_file);
+
+    char *token[30], *new_token[30];
+    token[0] = strtok(history_text, "\n");
+    int i = 0;
+    while (token[i] != NULL)
+    {
+        // printf("::%s\n", token[i]);
+        token[++i] = strtok(NULL, "\n");
+    }
+    fclose(hist_file);
+
+    int num = 10;
+    if (arr[1] != NULL)
+        num = atoi(arr[1]);
+    if ((num < 21) & (num > 0))
+    {
+        for (int i = 20 - num; i < 20; i++)
+        {
+            if (strcmp(token[i], "empty") != 0)
+                printf("%s\n", token[i]);
+        }
+    }
+    else
+    {
+        printf(" --<num> argument must be integer from 1 to 20\n");
+    }
 }
+
 void init_hist()
 {
-    char hist_path[1024] = "";
-    strcat(hist_path, HOME_PATH);
-    strcat(hist_path, "/history.txt");
+    // char HIST_PATH[1024] = "";
+    // strcat(HIST_PATH, HOME_PATH);
+    // strcat(HIST_PATH, "/history.txt");
 
     FILE *hist_file;
-    hist_file = fopen(hist_path, "w");
+    hist_file = fopen(HIST_PATH, "r+");
 
-    fprintf(hist_file, "%s", "");
-    fclose(hist_file);
-    hist_file = fopen(hist_path, "a");
-    for (int i = 0; i < 20; i++)
-        fprintf(hist_file, "%s\n", "empty");
-    fclose(hist_file);
+    if (hist_file == NULL)
+    {
+        printf("histroy file doesnt exist, creating it\n");
+        // fclose(hist_file);
+
+        hist_file = fopen(HIST_PATH, "w+");
+        fprintf(hist_file, "%s", "");
+        fclose(hist_file);
+
+        printf("craeted history file\n");
+        hist_file = fopen(HIST_PATH, "a");
+        for (int i = 0; i < 20; i++)
+            fprintf(hist_file, "%s\n", "empty");
+        fclose(hist_file);
+    }
+    else
+        fclose(hist_file);
 }
+
 void add_to_hist(char *input)
 {
-    char hist_path[1024] = "";
-    strcat(hist_path, HOME_PATH);
-    strcat(hist_path, "/history.txt");
+    // char HIST_PATH[1024] = "";
+    // strcat(HIST_PATH, HOME_PATH);
+    // strcat(HIST_PATH, "/history.txt");
 
     FILE *hist_file;
-    hist_file = fopen(hist_path, "a");
+    hist_file = fopen(HIST_PATH, "a");
     char cpy_inp[1024];
     strcpy(cpy_inp, input);
     fprintf(hist_file, "%s", input);
     fclose(hist_file);
 
-    hist_file = fopen(hist_path, "r+");
+    hist_file = fopen(HIST_PATH, "r+");
     char history_text[100005] = "";
 
     fseek(hist_file, 0, SEEK_END);
@@ -70,14 +117,14 @@ void add_to_hist(char *input)
         token[++i] = strtok(NULL, "\n");
     }
     fclose(hist_file);
-    hist_file = fopen(hist_path, "w");
+    hist_file = fopen(HIST_PATH, "w");
     fprintf(hist_file, "%s", "");
     fclose(hist_file);
 
     char buffer[10005] = "";
     int j = 1;
     // printf(" i is %d\n", i);
-    hist_file = fopen(hist_path, "a");
+    hist_file = fopen(HIST_PATH, "a");
     while (j < i)
     {
         fprintf(hist_file, "%s\n", token[j]);
@@ -86,6 +133,7 @@ void add_to_hist(char *input)
 
     fclose(hist_file);
 }
+
 void clearscreen()
 {
 }
@@ -101,6 +149,7 @@ void find_pwd(char *STR)
     getcwd(temp, sizeof(temp));
     strcpy(STR, temp);
 }
+
 void find_hd(char *STR)
 {
     getcwd(HOME_PATH, sizeof(HOME_PATH));
@@ -125,6 +174,7 @@ void get_path_from_home(char *path, char *chd, char *cwd)
         strcpy(path, cwd);
     }
 }
+
 char *getpromptline(char *chd, char *cwd)
 {
     char *username = getlogin();
@@ -189,7 +239,7 @@ void process_input(char *input)
     char *arr[10];
     char hist_input[1024] = "";
     strcpy(hist_input, input);
-
+    add_to_hist(hist_input);
     int i = 0;
     arr[0] = strtok(input, ";\n");
 
@@ -207,5 +257,4 @@ void process_input(char *input)
         execute_command(arr[j]);
         j++;
     }
-    add_to_hist(hist_input);
 }

@@ -12,7 +12,9 @@ void bexec(char *arr[])
     if (forkReturn == 0)
     {
         // forkReturn is ZERO for the child process.
+        setpgid(0, 0);
         int ret = execvp(arr[0], arr);
+
         if (ret == -1)
             perror(arr[0]);
     }
