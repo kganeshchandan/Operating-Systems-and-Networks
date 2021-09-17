@@ -3,6 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
+#include <ctype.h>
+#include <pwd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "commands/echo.h"
 #include "commands/cd.h"
@@ -104,7 +110,7 @@ char *getpromptline(char *chd, char *cwd)
     return username;
 }
 
-void execute_command(char *COMMAND)
+void execute_command(char *COMMAND, int bg)
 {
     char *c_arr[10];
     int i = 0;
@@ -126,10 +132,6 @@ void execute_command(char *COMMAND)
             cd(c_arr, HOME_PATH);
         else if (strcmp(c_arr[0], "pwd") == 0)
             pwd(c_arr, HOME_PATH);
-        else if ((i > 1) & (strcmp(c_arr[i - 1], "&") == 0))
-        {
-            bexec(c_arr);
-        }
         else if (strcmp(c_arr[0], "history") == 0)
             history(c_arr, HIST_PATH);
         else if (strcmp(c_arr[0], "repeat") == 0)
@@ -138,21 +140,60 @@ void execute_command(char *COMMAND)
             pinfo(c_arr);
         else if (strcmp(c_arr[0], "ls") == 0)
             ls(c_arr);
+        else if (strcmp(c_arr[0], "exit") == 0)
+            exit(0);
+        else if (bg)
+            bexec(c_arr);
         else
             fexec(c_arr);
     }
+}
+char str_and[1024] = "";
+
+char *get_before_and(char *command)
+{
+    int hash_arr[1024] = {0};
+    int len = strlen(command);
+    int strt = 0, end = 0;
+    char subtext[1024] = {'\0'};
+    for (int i = 0; i < len; i++)
+    {
+        if (command[i] == '&')
+        {
+            end = i;
+            memcpy(subtext, &command[strt], end - strt);
+            subtext[end - strt] = '\0';
+            strt = i + 1;
+            // strcat(subtext, " &");
+            // printf(" go to bg |%s|\n", subtext);
+            execute_command(subtext, 1);
+        }
+    }
+    memcpy(subtext, &command[strt], len - strt);
+    subtext[len - strt] = '\0';
+    // strcat(subtext, " &");
+    // printf("|%s|\n", subtext);
+    execute_command(subtext, 0);
+    // printf("%s\n", subtext);
+    // printf("%d %d %d\n", len, strt, end);
 }
 
 void process_input(char *input)
 {
 
-    char *arr[10];
+    char *arr[100];
+    char *cp_arr[100];
     char hist_input[1024] = "";
     strcpy(hist_input, input);
     add_to_hist(hist_input, HIST_PATH);
+
+    char copy_command[1024] = "";
+    // strcpy(copy_input, input);
+
+    // int j = 0;
+    // cp_arr[0] = strtok( copy_input, "")
     int i = 0;
     arr[0] = strtok(input, ";\n");
-
     while (arr[i] != NULL)
     {
         i = i + 1;
@@ -162,9 +203,51 @@ void process_input(char *input)
     int j = 0;
     while (arr[j] != NULL)
     {
-        // printf(":::::::;;%s|\n", arr[j]);
 
-        execute_command(arr[j]);
+        strcpy(copy_command, arr[j]);
+        printf("%d is %s|\n", j, copy_command);
+
+        get_before_and(copy_command);
+        // execute_command(arr[j]);
         j++;
     }
+
+    // the bottom on works fine for no &s
+    // int i = 0;
+    // arr[0] = strtok(input, ";\n");
+    // while (arr[i] != NULL)
+    // {
+    //     i = i + 1;
+    //     // printf("%s\n", arr[i]);
+    //     arr[i] = strtok(NULL, ";\n");
+    // }
+    // int j = 0;
+    // while (arr[j] != NULL)
+    // {
+    //     printf(" %d th command is %s|\n", j, arr[j]);
+    //     execute_command(arr[j]);
+    //     j++;
+    // }
+}
+
+char *childarr[100];
+void handlesignal()
+{
+    // pid_t pid;
+    // int status;
+    // int procKill = 0;
+    // char buffer[1024] = "";
+
+    // while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
+    // {
+    //     status = WIFEXITED(status);
+    //     for (int i = 0; i < 100; i = i + 2)
+    //     {
+    //         if (childarr[i] == pid)
+    //         {
+    //             sprintf(buffer, "\n%s with pid %d exited %s\n", childarr[i + 1], atoi(pid), status != 0 ? "normally" : "abnormally");
+    //         }
+    //     }
+    //     procKill++;
+    // }
 }

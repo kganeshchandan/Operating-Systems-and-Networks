@@ -7,7 +7,7 @@
 
 void fexec(char *arr[])
 {
-    printf("Executing in foreground\n");
+    // printf("Executing in foreground\n");s
 
     int forkReturn = fork();
     // printf("BOTH\n");

@@ -6,9 +6,16 @@
 
 void bexec(char *arr[])
 {
-    // printf("running in BG\n");
+    printf("running in BG\n");
     int forkReturn = fork();
     // printf("BOTH\n");
+    int i = 0;
+    // while (arr[i] != NULL)
+    // {
+    //     printf("::%s\n", arr[i]);
+    //     i++;
+    // }
+
     if (forkReturn == 0)
     {
         // forkReturn is ZERO for the child process.

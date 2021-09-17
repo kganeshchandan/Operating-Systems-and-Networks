@@ -18,6 +18,6 @@ void repeat(char *arr[])
 
         char temp[1024] = "";
         strcpy(temp, new_commad);
-        execute_command(temp);
+        execute_command(temp, 0);
     }
 }
