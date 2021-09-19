@@ -243,8 +243,9 @@ void handlesignal()
                 strcpy(pname, childarr[i].name);
                 printf("\nProcess %s with pid %d exited %s\n", pname, (int)pid, status != 0 ? "normally" : "abnormally");
                 // childarr[i].pid = 0;
-
+                printf("\033[1;33m");
                 printf("%s", getpromptline(PATH_CHD, PATH_CWD));
+                printf("\033[0m");
                 fflush(stdout);
                 // fgets("", MAX_INP_LEN, stdin);
                 // process_input("");

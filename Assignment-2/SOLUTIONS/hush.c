@@ -13,7 +13,9 @@ void launch_hush()
     {
         find_pwd(PATH_CWD);
         char INPUT_LINE[MAX_INP_LEN];
+        printf("\033[1;33m");
         printf("%s", getpromptline(PATH_CHD, PATH_CWD));
+        printf("\033[0m");
         fgets(INPUT_LINE, MAX_INP_LEN, stdin);
         process_input(INPUT_LINE);
     }
