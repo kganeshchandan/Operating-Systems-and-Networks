@@ -9,6 +9,8 @@
 #include <pwd.h>
 #include <grp.h>
 
+extern char HOME_PATH[1024];
+
 char fperms[10] = "----------";
 
 char *get_perms(mode_t bits)
@@ -99,7 +101,21 @@ void ls(char *arr[])
         else if ((strcmp(arr[i], "-al") == 0) | (strcmp(arr[i], "-la") == 0))
             flag_arr[0] = flag_arr[1] = 1;
         else
-            path_arr[j++] = arr[i];
+        {
+            if (arr[i][0] == '~')
+            {
+                char buff[1024] = "";
+                strcpy(buff, HOME_PATH);
+                strcat(buff, "/");
+                char r_p[1024] = "";
+                memcpy(r_p, &arr[i][1], strlen(arr[i]) - 1);
+                strcat(buff, r_p);
+                path_arr[j++] = buff;
+            }
+            else
+                path_arr[j++] = arr[i];
+        }
+
         i++;
     }
     if (path_arr[0] == NULL)
@@ -142,16 +158,36 @@ void ls(char *arr[])
                     if (temp_str[0] != '.')
                         printf("%s ", temp_str);
                 }
+                printf("\n");
             }
 
             if ((flag_arr[0] == 1) & (flag_arr[1] == 0))
             {
                 for (int k = 0; k < no_of_files; k++)
                     printf("%s ", dir_content[k]);
+                printf("\n");
             }
 
             if ((flag_arr[0] == 0) & (flag_arr[1] == 1))
             {
+                blkcnt_t size = 0;
+                for (int j = 0; j < no_of_files; j++)
+                {
+                    struct stat stats;
+                    char path_to_file[1024] = "";
+                    strcpy(path_to_file, path_arr[item]);
+                    strcat(path_to_file, "/");
+                    strcat(path_to_file, dir_content[j]);
+                    // printf("%s\n", path_to_file);
+                    strcpy(temp_str, dir_content[j]);
+                    if (temp_str[0] != '.')
+                    {
+                        lstat(path_to_file, &stats);
+                        size = size + stats.st_blocks;
+                        // printf("total %ld\n", size / 2);
+                    }
+                }
+                printf("total %ld\n", size / 2);
                 for (int j = 0; j < no_of_files; j++)
                 {
                     struct stat stats;
@@ -171,6 +207,20 @@ void ls(char *arr[])
 
             if ((flag_arr[0] == 1) & (flag_arr[1] == 1))
             {
+                blkcnt_t size = 0;
+                for (int j = 0; j < no_of_files; j++)
+                {
+                    struct stat stats;
+                    char path_to_file[1024] = "";
+                    strcpy(path_to_file, path_arr[item]);
+                    strcat(path_to_file, "/");
+                    strcat(path_to_file, dir_content[j]);
+                    // printf("%s\n", path_to_file);
+                    lstat(path_to_file, &stats);
+                    size = size + stats.st_blocks;
+                    // printf("total %ld\n", size / 2);
+                }
+                printf("total %ld\n", size / 2);
                 for (int j = 0; j < no_of_files; j++)
                 {
                     struct stat stats;
@@ -188,6 +238,6 @@ void ls(char *arr[])
         {
             perror(path_arr[item]);
         }
-        printf("\n");
+        // printf("\n");
     }
 }

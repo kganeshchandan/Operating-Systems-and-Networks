@@ -6,6 +6,18 @@
 int MAX_INP_LEN = 1024;
 char PATH_CHD[1024];
 char PATH_CWD[1024];
+
+void launch_hush()
+{
+    while (1)
+    {
+        find_pwd(PATH_CWD);
+        char INPUT_LINE[MAX_INP_LEN];
+        printf("%s", getpromptline(PATH_CHD, PATH_CWD));
+        fgets(INPUT_LINE, MAX_INP_LEN, stdin);
+        process_input(INPUT_LINE);
+    }
+}
 int main()
 {
     clearscreen();
@@ -20,12 +32,5 @@ int main()
     sigaction(SIGCHLD, &SIGAC, NULL);
 
     init_hist();
-    while (1)
-    {
-        find_pwd(PATH_CWD);
-        char INPUT_LINE[MAX_INP_LEN];
-        printf("%s", getpromptline(PATH_CHD, PATH_CWD));
-        fgets(INPUT_LINE, MAX_INP_LEN, stdin);
-        process_input(INPUT_LINE);
-    }
+    launch_hush();
 }

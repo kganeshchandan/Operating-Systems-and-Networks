@@ -39,7 +39,8 @@ void pinfo(char *arr[])
             c_arr[++i] = strtok(NULL, " ");
         }
         char sign[10] = "";
-        if (pid == getpid())
+        // printf("%d, %d\n", atoi(c_arr[4]), atoi(c_arr[7]));
+        if (atoi(c_arr[4]) == atoi(c_arr[7]))
             strcpy(sign, "+");
         printf("pid --%s\n", c_arr[0]);
         printf("Process Status --%s%s\n", c_arr[2], sign);

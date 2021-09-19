@@ -4,21 +4,29 @@
 #include <string.h>
 #include "../utils.h"
 
-char most_recent_dir[1024];
+char most_recent_dir[1024] = "~";
 void cd(char *arr[], char *home)
 {
     if (arr[1] != NULL)
     {
-        printf("CD-ing to |%s|\n", arr[1]);
+        // printf("CD-ing to |%s|\n", arr[1]);
         if ((strcmp(arr[1], "..") == 0) | (strcmp(arr[1], ".") == 0))
         {
             getcwd(most_recent_dir, sizeof(most_recent_dir));
             chdir(arr[1]);
         }
-        else if (strcmp(arr[1], "~") == 0)
+        else if (arr[1][0] == '~')
         {
+            char buff[1024] = "";
+            strcpy(buff, home);
+            strcat(buff, "/");
+            char r_p[1024] = "";
+            memcpy(r_p, &arr[1][1], strlen(arr[1]) - 1);
+            strcat(buff, r_p);
+
             getcwd(most_recent_dir, sizeof(most_recent_dir));
-            chdir(home);
+            printf("::%s\n", buff);
+            chdir(buff);
         }
         else if (strcmp(arr[1], "-") == 0)
         {

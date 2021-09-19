@@ -44,11 +44,15 @@ void history(char *arr[], char *HIST_PATH)
 }
 void add_to_hist(char *input, char *HIST_PATH)
 {
-    // char HIST_PATH[1024] = "";
-    // strcat(HIST_PATH, HOME_PATH);
-    // strcat(HIST_PATH, "/history.txt");
+    int i = 0;
+    int bul = 0;
+    for (i = 0; i < strlen(input) - 1; i++)
+        if (input[i] != ' ' & input[i] != '\t')
+            bul = 1;
+    if (bul != 1)
+        return;
 
-    FILE *hist_file;
+        FILE *hist_file;
     hist_file = fopen(HIST_PATH, "a");
     char cpy_inp[1024];
     strcpy(cpy_inp, input);
@@ -65,7 +69,7 @@ void add_to_hist(char *input, char *HIST_PATH)
     // printf("%s", history_text);
     char *token[30], *new_token[30];
     token[0] = strtok(history_text, "\n");
-    int i = 0;
+    i = 0;
     while (token[i] != NULL)
     {
         // printf("::%s\n", token[i]);

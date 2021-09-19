@@ -23,6 +23,10 @@
 char HOME_PATH[1024] = "";
 char *HIST_ARR[20][1024];
 char HIST_PATH[1024] = "/var/tmp/history.txt";
+extern void launch_hush();
+// extern childs;
+struct childs childarr[1024];
+extern int n_childs;
 
 void init_hist()
 {
@@ -188,10 +192,6 @@ void process_input(char *input)
     add_to_hist(hist_input, HIST_PATH);
 
     char copy_command[1024] = "";
-    // strcpy(copy_input, input);
-
-    // int j = 0;
-    // cp_arr[0] = strtok( copy_input, "")
     int i = 0;
     arr[0] = strtok(input, ";\n");
     while (arr[i] != NULL)
@@ -205,7 +205,7 @@ void process_input(char *input)
     {
 
         strcpy(copy_command, arr[j]);
-        printf("%d is %s|\n", j, copy_command);
+        // printf("%d is %s|\n", j, copy_command);
 
         get_before_and(copy_command);
         // execute_command(arr[j]);
@@ -230,24 +230,57 @@ void process_input(char *input)
     // }
 }
 
-char *childarr[100];
 void handlesignal()
 {
-    // pid_t pid;
-    // int status;
-    // int procKill = 0;
-    // char buffer[1024] = "";
+    pid_t pid;
+    int status;
+    char pname[1024];
+    while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
+    {
+        status = WIFEXITED(status);
+        for (int i = 0; i < n_childs; i++)
+        {
+            if (childarr[i].pid == pid)
+            {
+                strcpy(pname, childarr[i].name);
+                printf("\nProcess %s with pid %d exited %s\n", pname, (int)pid, status != 0 ? "normally" : "abnormally");
+            }
+        }
 
-    // while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
-    // {
-    //     status = WIFEXITED(status);
-    //     for (int i = 0; i < 100; i = i + 2)
-    //     {
-    //         if (childarr[i] == pid)
-    //         {
-    //             sprintf(buffer, "\n%s with pid %d exited %s\n", childarr[i + 1], atoi(pid), status != 0 ? "normally" : "abnormally");
-    //         }
-    //     }
-    //     procKill++;
-    // }
-}
+        // break;
+    }
+    launch_hush();
+};
+
+// void childProcessSignalHandler(int sigNum)
+// {
+//     pid_t pid;
+//     int status;
+//     bool process_terminated = false;
+//     while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
+//     {
+//         bool found = false;
+//         status = WIFEXITED(status);
+//         for (int i = 0; i < child_process_count; i++)
+//         {
+//             if (!found)
+//             {
+//                 if (childProcesses[i].pid == pid)
+//                 {
+//                     printf("\n%s with pid %d exited %s.\n", childProcesses[i].pname, pid, status != 0 ? "normally" : "abnormally");
+//                     found = true;
+//                     process_terminated = true;
+//                 }
+//             }
+//             else
+//             {
+//                 childProcesses[i].pid = childProcesses[i + 1].pid;
+//                 strcpy(childProcesses[i].pname, childProcesses[i + 1].pname);
+//             }
+//         }
+//         if (found)
+//             child_process_count--;
+//     }
+//     if (process_terminated)
+//         displayPrompt();
+// }
