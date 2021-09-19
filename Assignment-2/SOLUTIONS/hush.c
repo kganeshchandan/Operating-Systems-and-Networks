@@ -20,7 +20,6 @@ void launch_hush()
 }
 int main()
 {
-    clearscreen();
     find_pwd(PATH_CHD);
     find_hd(PATH_CHD);
 
@@ -32,5 +31,6 @@ int main()
     sigaction(SIGCHLD, &SIGAC, NULL);
 
     init_hist();
+    // while (1)
     launch_hush();
 }

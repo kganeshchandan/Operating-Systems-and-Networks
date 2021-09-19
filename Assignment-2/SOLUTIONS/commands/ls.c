@@ -13,7 +13,7 @@ extern char HOME_PATH[1024];
 
 char fperms[10] = "----------";
 
-char *get_perms(mode_t bits)
+char *get_perms(mode_t bits) // a function to get the permisions  string for -l flag from the bit map
 {
     char perms[11] = "----------";
     if (S_ISREG(bits))
@@ -55,54 +55,52 @@ char *get_perms(mode_t bits)
     return fperms;
 }
 
-void print_stat(struct stat stats, char *name)
+void print_stat(struct stat stats, char *name) // func to print the file info for -l flag
 {
     char line[1024] = "";
-    strcat(line, get_perms(stats.st_mode));
+    strcat(line, get_perms(stats.st_mode)); //get permissions
     strcat(line, " ");
 
     int nlink = stats.st_nlink;
     char _nlink[10] = "";
-    sprintf(_nlink, "%d", nlink);
+    sprintf(_nlink, "%d", nlink); // get the no of links
     strcat(line, _nlink);
     strcat(line, " ");
 
-    strcat(line, getpwuid(stats.st_uid)->pw_name);
+    strcat(line, getpwuid(stats.st_uid)->pw_name); // get the user id
     strcat(line, " ");
 
-    strcat(line, getgrgid(stats.st_uid)->gr_name);
+    strcat(line, getgrgid(stats.st_uid)->gr_name); // get the group id
     strcat(line, " ");
 
     // strcat(line, ctime(&stats.st_mtime));
     char buffer[80] = "";
-    strftime(buffer, 80, "%b %d %H:%M", localtime(&stats.st_mtime));
+    strftime(buffer, 80, "%b %d %H:%M", localtime(&stats.st_mtime)); // get the last modified time & format it
     strcat(line, buffer);
     strcat(line, " ");
     strcat(line, name);
     printf("%s\n", line);
 }
 
-void ls(char *arr[])
+void ls(char *arr[]) //implementing ls
 {
-    // printf("Entered ls\n");
-
-    char *path_arr[10] = {'\0'};
-    int flag_arr[2] = {0, 0}; // [a flag, l flag]
+    char *path_arr[10] = {'\0'}; // creating an array of strings to store all the path arguments to ls
+    int flag_arr[2] = {0, 0};    //  creating a hash array for -a -l flags, [a flag, l flag]
 
     int i = 1, j = 0;
     // marking all flags in flag arr
     // printf("%s\n", arr[1][0]);
-    while (arr[i] != NULL)
+    while (arr[i] != NULL) // iterate over all the arguments to identify flags and paths separtely
     {
-        if ((strcmp(arr[i], "-a") == 0))
+        if ((strcmp(arr[i], "-a") == 0)) // idenitfy -a flag
             flag_arr[0] = 1;
-        else if ((strcmp(arr[i], "-l") == 0))
+        else if ((strcmp(arr[i], "-l") == 0)) // idenitfy -l flag
             flag_arr[1] = 1;
-        else if ((strcmp(arr[i], "-al") == 0) | (strcmp(arr[i], "-la") == 0))
+        else if ((strcmp(arr[i], "-al") == 0) | (strcmp(arr[i], "-la") == 0)) // identify -al -la flags
             flag_arr[0] = flag_arr[1] = 1;
         else
         {
-            if (arr[i][0] == '~')
+            if (arr[i][0] == '~') // identifying args which start with ~ and put it in path_arr
             {
                 char buff[1024] = "";
                 strcpy(buff, HOME_PATH);
@@ -118,7 +116,7 @@ void ls(char *arr[])
 
         i++;
     }
-    if (path_arr[0] == NULL)
+    if (path_arr[0] == NULL) // if no args r given to ls it should be same as ls .
     {
         path_arr[0] = ".";
         j = 1;
@@ -127,20 +125,22 @@ void ls(char *arr[])
     int path_len = j;
 
     int item;
-    for (item = 0; item < path_len; item++) // item means path given as arg
+    for (item = 0; item < path_len; item++) // iterate over all paths given to show the ls of each one
     {
         DIR *d;
         struct dirent *dir;
         if (path_len > 1)
             printf("%s:\n", path_arr[item]);
+
         d = opendir(path_arr[item]);
-        char *dir_content[1024];
-        char file_name[256] = "";
-        int no_of_files = 0;
-        if (d)
+        char *dir_content[1024];  // store all the files in a dir here
+        char file_name[256] = ""; // filename of arg
+        int no_of_files = 0;      // no of files in each arg
+
+        if (d) // if the dir path given is valid
         {
             i = 0;
-            while ((dir = readdir(d)) != NULL)
+            while ((dir = readdir(d)) != NULL) // iterativly add files to dir content
             {
                 dir_content[i] = (char *)malloc(strlen(dir->d_name) + 1);
                 strcpy(dir_content[i], dir->d_name);
@@ -150,7 +150,8 @@ void ls(char *arr[])
             no_of_files = i;
             closedir(d);
             char temp_str[256] = "";
-            if ((flag_arr[0] == 0) & (flag_arr[1] == 0))
+
+            if ((flag_arr[0] == 0) & (flag_arr[1] == 0)) // no flags r present
             {
                 for (int k = 0; k < no_of_files; k++)
                 {
@@ -161,14 +162,14 @@ void ls(char *arr[])
                 printf("\n");
             }
 
-            if ((flag_arr[0] == 1) & (flag_arr[1] == 0))
+            if ((flag_arr[0] == 1) & (flag_arr[1] == 0)) // only -a flag is present
             {
                 for (int k = 0; k < no_of_files; k++)
                     printf("%s ", dir_content[k]);
                 printf("\n");
             }
 
-            if ((flag_arr[0] == 0) & (flag_arr[1] == 1))
+            if ((flag_arr[0] == 0) & (flag_arr[1] == 1)) // only -l flag is present
             {
                 blkcnt_t size = 0;
                 for (int j = 0; j < no_of_files; j++)
@@ -205,7 +206,7 @@ void ls(char *arr[])
                 }
             }
 
-            if ((flag_arr[0] == 1) & (flag_arr[1] == 1))
+            if ((flag_arr[0] == 1) & (flag_arr[1] == 1)) // both -a -l flags r present
             {
                 blkcnt_t size = 0;
                 for (int j = 0; j < no_of_files; j++)
@@ -234,7 +235,7 @@ void ls(char *arr[])
                 }
             }
         }
-        else
+        else // path given is incorrect
         {
             perror(path_arr[item]);
         }

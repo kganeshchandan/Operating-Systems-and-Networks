@@ -23,8 +23,10 @@
 char HOME_PATH[1024] = "";
 char *HIST_ARR[20][1024];
 char HIST_PATH[1024] = "/var/tmp/history.txt";
+extern char PATH_CHD[1024];
+extern char PATH_CWD[1024];
+extern int MAX_INP_LEN;
 extern void launch_hush();
-// extern childs;
 struct childs childarr[1024];
 extern int n_childs;
 
@@ -50,10 +52,6 @@ void init_hist()
     }
     else
         fclose(hist_file);
-}
-
-void clearscreen()
-{
 }
 
 void error_handle(int error)
@@ -96,12 +94,21 @@ void get_path_from_home(char *path, char *chd, char *cwd)
 char *getpromptline(char *chd, char *cwd)
 {
     char *username = getlogin();
+    if (username == NULL)
+    {
+        perror("unable to obtain username");
+        exit(0);
+    }
+
     strcat(username, "@");
     char host[256] = "";
     int hostname = gethostname(host, sizeof(host)); //find the host name
 
     if (hostname == -1)
-        error_handle(hostname);
+    {
+        perror("unable to obtain hostname");
+        exit(0);
+    }
     else
         strcat(username, host);
     strcat(username, ":)");
@@ -111,6 +118,7 @@ char *getpromptline(char *chd, char *cwd)
     strcat(username, path);
 
     strcat(username, "> ");
+    // sprintf(username, "< %s", username);
     return username;
 }
 
@@ -168,7 +176,7 @@ char *get_before_and(char *command)
             memcpy(subtext, &command[strt], end - strt);
             subtext[end - strt] = '\0';
             strt = i + 1;
-            // strcat(subtext, " &");
+            strcat(subtext, " ");
             // printf(" go to bg |%s|\n", subtext);
             execute_command(subtext, 1);
         }
@@ -185,6 +193,11 @@ char *get_before_and(char *command)
 void process_input(char *input)
 {
 
+    if (strlen(input) > MAX_INP_LEN)
+    {
+        printf(" Input len must be less than 1024\n");
+        return;
+    }
     char *arr[100];
     char *cp_arr[100];
     char hist_input[1024] = "";
@@ -211,76 +224,36 @@ void process_input(char *input)
         // execute_command(arr[j]);
         j++;
     }
-
-    // the bottom on works fine for no &s
-    // int i = 0;
-    // arr[0] = strtok(input, ";\n");
-    // while (arr[i] != NULL)
-    // {
-    //     i = i + 1;
-    //     // printf("%s\n", arr[i]);
-    //     arr[i] = strtok(NULL, ";\n");
-    // }
-    // int j = 0;
-    // while (arr[j] != NULL)
-    // {
-    //     printf(" %d th command is %s|\n", j, arr[j]);
-    //     execute_command(arr[j]);
-    //     j++;
-    // }
 }
 
 void handlesignal()
 {
+    char INPUT_LINE[MAX_INP_LEN];
     pid_t pid;
     int status;
     char pname[1024];
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
     {
         status = WIFEXITED(status);
+        // printf("pid is %d\n", pid);
         for (int i = 0; i < n_childs; i++)
         {
             if (childarr[i].pid == pid)
             {
                 strcpy(pname, childarr[i].name);
                 printf("\nProcess %s with pid %d exited %s\n", pname, (int)pid, status != 0 ? "normally" : "abnormally");
+                // childarr[i].pid = 0;
+
+                printf("%s", getpromptline(PATH_CHD, PATH_CWD));
+                fflush(stdout);
+                // fgets("", MAX_INP_LEN, stdin);
+                // process_input("");
+                // printf("bruh\n");
             }
         }
 
         // break;
     }
-    launch_hush();
-};
 
-// void childProcessSignalHandler(int sigNum)
-// {
-//     pid_t pid;
-//     int status;
-//     bool process_terminated = false;
-//     while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
-//     {
-//         bool found = false;
-//         status = WIFEXITED(status);
-//         for (int i = 0; i < child_process_count; i++)
-//         {
-//             if (!found)
-//             {
-//                 if (childProcesses[i].pid == pid)
-//                 {
-//                     printf("\n%s with pid %d exited %s.\n", childProcesses[i].pname, pid, status != 0 ? "normally" : "abnormally");
-//                     found = true;
-//                     process_terminated = true;
-//                 }
-//             }
-//             else
-//             {
-//                 childProcesses[i].pid = childProcesses[i + 1].pid;
-//                 strcpy(childProcesses[i].pname, childProcesses[i + 1].pname);
-//             }
-//         }
-//         if (found)
-//             child_process_count--;
-//     }
-//     if (process_terminated)
-//         displayPrompt();
-// }
+    // launch_hush();
+};

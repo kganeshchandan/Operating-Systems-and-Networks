@@ -44,6 +44,8 @@ void history(char *arr[], char *HIST_PATH)
 }
 void add_to_hist(char *input, char *HIST_PATH)
 {
+    // check if the commands entered is a valid one to ush to history
+
     int i = 0;
     int bul = 0;
     for (i = 0; i < strlen(input) - 1; i++)
@@ -52,10 +54,26 @@ void add_to_hist(char *input, char *HIST_PATH)
     if (bul != 1)
         return;
 
-        FILE *hist_file;
+    FILE *hist_file, *og_hist_file;
+
+    og_hist_file = fopen(HIST_PATH, "r+"); // the next few lines see if the lates command in history matchse with the current command
+    char og_ht[100005] = "";
+    fseek(og_hist_file, 0, SEEK_END);
+    int og_l = ftell(og_hist_file);
+    fseek(og_hist_file, 0, SEEK_SET);
+    fread(og_ht, 1, og_l, og_hist_file);
+    char *og_token[30];
+    og_token[0] = strtok(og_ht, "\n");
+    i = 0;
+    while (og_token[i] != NULL)
+        og_token[++i] = strtok(NULL, "\n");
+    fclose(og_hist_file);
+    strcat(og_token[19], "\n");
+    if (strcmp(og_token[19], input) == 0) // dont add to history if the input is same as latest command in history
+        return;
+
+    // adding the most recent command to history
     hist_file = fopen(HIST_PATH, "a");
-    char cpy_inp[1024];
-    strcpy(cpy_inp, input);
     fprintf(hist_file, "%s", input);
     fclose(hist_file);
 
@@ -67,7 +85,7 @@ void add_to_hist(char *input, char *HIST_PATH)
     fseek(hist_file, 0, SEEK_SET);
     fread(history_text, 1, l, hist_file);
     // printf("%s", history_text);
-    char *token[30], *new_token[30];
+    char *token[30];
     token[0] = strtok(history_text, "\n");
     i = 0;
     while (token[i] != NULL)

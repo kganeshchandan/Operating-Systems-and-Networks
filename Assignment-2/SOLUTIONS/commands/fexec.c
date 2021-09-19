@@ -5,23 +5,21 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-void fexec(char *arr[])
+void fexec(char *arr[]) // running a process in foreground
 {
-    // printf("Executing in foreground\n");s
-
-    int forkReturn = fork();
+    int forkReturn = fork(); // craeting a child to execture the foreground process and wait in parent process, till it finishes
     // printf("BOTH\n");
     if (forkReturn == 0)
     {
         // forkReturn is ZERO for the child process.
-        int ret = execvp(arr[0], arr);
+        int ret = execvp(arr[0], arr); // execute the command
         if (ret == -1)
-            perror(arr[0]);
+            printf("%s :command not found\n", arr[0]);
     }
     else
     {
         int wstatus = 0;
-        pid_t ret = waitpid(forkReturn, &wstatus, WUNTRACED);
+        pid_t ret = waitpid(forkReturn, &wstatus, WUNTRACED); // wait till the foreground process finishes
         // forkReturn is non-ZERO for the parent.
     }
 }
