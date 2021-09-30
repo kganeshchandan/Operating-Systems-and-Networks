@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 #include "commands/echo.h"
 #include "commands/cd.h"
@@ -51,11 +52,9 @@ void sigint_handler(int signum)
     fflush(stdout);
     return;
 }
+
 void sigtstp_handler(int signum)
 {
-    // printf("\033[1;31mEt tu brute?\n\033[0m");
-    // setpgid(current_fg.pid, 0);
-
     printf("\n");
     printf("%s with pid %d is pushed to bg\n", current_fg.name, current_fg.pid);
     childarr[n_childs].pid = current_fg.pid;
@@ -157,22 +156,106 @@ char *getpromptline(char *chd, char *cwd)
     return username;
 }
 
+int check_redirections(char *command)
+{
+    char *words[10];
+    words[0] = strtok(command, " \t");
+    int i = 0;
+    if (words[0] != NULL)
+    {
+        while (words[i] != NULL)
+            words[++i] = strtok(NULL, " \t");
+        /////////////////////////////////////////////////////////////////
+        int prev_marker = 0;
+        // printf("len %d\n", i);
+        int hash_arr[2] = {0, 0};
+        int ifd, ofd, og_ifd, og_ofd;
+        for (int k = 0; k < i; k++)
+        {
+            if (strcmp(words[k], "<") == 0)
+            {
+                // printf("bruh\n");
+                ifd = open(words[k + 1], O_RDONLY);
+                og_ifd = dup(STDIN_FILENO);
+                dup2(ifd, STDIN_FILENO);
+                // printf("bruh\n");
+
+                words[k] = NULL;
+                hash_arr[0] = 1;
+                prev_marker = k;
+            }
+            else if (strcmp(words[k], ">") == 0)
+            {
+                ofd = open(words[k + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                og_ofd = dup(STDOUT_FILENO);
+                dup2(ofd, STDOUT_FILENO);
+
+                words[k] = NULL;
+                hash_arr[1] = 1;
+                prev_marker = k;
+            }
+            else if (strcmp(words[k], ">>") == 0)
+            {
+                ofd = open(words[k + 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+                og_ofd = dup(STDOUT_FILENO);
+                dup2(ofd, STDOUT_FILENO);
+
+                words[k] = NULL;
+                hash_arr[1] = 1;
+                prev_marker = k;
+            }
+        }
+        int l = 0;
+        char newcommand[1024] = "";
+        while (words[l] != NULL)
+        {
+            strcat(newcommand, words[l]);
+            strcat(newcommand, " ");
+            l++;
+        }
+        if (prev_marker > 0)
+        {
+            execute_command(newcommand, 0);
+            if (hash_arr[0] == 1)
+            {
+                close(ifd);
+                dup2(og_ifd, STDIN_FILENO);
+            }
+            if (hash_arr[1] == 1)
+            {
+                close(ofd);
+                dup2(og_ofd, STDOUT_FILENO);
+            }
+            return 1;
+        }
+        else
+            return 0;
+    }
+}
+
 void execute_command(char *COMMAND, int bg_bool)
 {
+    // printf("command given to execute|%s|\n", COMMAND);
+    char temp[1024] = "";
+    strcpy(temp, COMMAND);
+    if (check_redirections(temp) != 0)
+    {
+        // printf("Found redirections\n");
+        return;
+    }
+
     char *c_arr[10];
     int i = 0;
 
     c_arr[0] = strtok(COMMAND, " \t");
-    // printf(":%s\n", c_arr[0]);
 
+    // printf(":%s\n", c_arr[0]);
     if (c_arr[0] != NULL)
     {
         while (c_arr[i] != NULL)
-        {
-            // printf(":%s\n", c_arr[i]);
             c_arr[++i] = strtok(NULL, " \t");
-        }
         // printf("last word%s\n", c_arr[i - 1]);
+
         if (strcmp(c_arr[0], "echo") == 0)
             echo(c_arr);
         else if (strcmp(c_arr[0], "cd") == 0)
