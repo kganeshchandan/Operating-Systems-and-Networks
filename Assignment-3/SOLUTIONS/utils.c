@@ -20,6 +20,9 @@
 #include "commands/history.h"
 #include "commands/ls.h"
 #include "commands/jobs.h"
+#include "commands/sig.h"
+#include "commands/bg.h"
+#include "commands/fg.h"
 
 char HOME_PATH[1024] = "";
 char *HIST_ARR[20][1024];
@@ -30,6 +33,7 @@ extern int MAX_INP_LEN;
 extern void launch_hush();
 extern struct childs childarr[1024];
 extern int n_childs;
+extern struct FG current_fg;
 
 void init_childs()
 {
@@ -49,7 +53,15 @@ void sigint_handler(int signum)
 }
 void sigtstp_handler(int signum)
 {
-    printf("\033[1;31mEt tu brute?\n\033[0m");
+    // printf("\033[1;31mEt tu brute?\n\033[0m");
+    // setpgid(current_fg.pid, 0);
+
+    printf("\n");
+    printf("%s with pid %d is pushed to bg\n", current_fg.name, current_fg.pid);
+    childarr[n_childs].pid = current_fg.pid;
+    strcpy(childarr[n_childs].name, current_fg.name);
+    childarr[n_childs].cur_Status = 0;
+    n_childs++;
     return;
 }
 
@@ -145,7 +157,7 @@ char *getpromptline(char *chd, char *cwd)
     return username;
 }
 
-void execute_command(char *COMMAND, int bg)
+void execute_command(char *COMMAND, int bg_bool)
 {
     char *c_arr[10];
     int i = 0;
@@ -179,7 +191,13 @@ void execute_command(char *COMMAND, int bg)
             exit(0);
         else if (strcmp(c_arr[0], "jobs") == 0)
             jobs(c_arr);
-        else if (bg)
+        else if (strcmp(c_arr[0], "sig") == 0)
+            sig(c_arr);
+        else if (strcmp(c_arr[0], "bg") == 0)
+            bg(c_arr);
+        else if (strcmp(c_arr[0], "fg") == 0)
+            fg(c_arr);
+        else if (bg_bool)
             bexec(c_arr);
         else
             fexec(c_arr);
@@ -260,22 +278,28 @@ void handlesignal()
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
     {
         status = WIFEXITED(status);
-        // printf("pid is %d\n", pid);
+        // printf("\npid is just finished %d\n", pid);
+
         for (int i = 0; i < n_childs; i++)
         {
             if (childarr[i].pid == pid)
             {
                 strcpy(pname, childarr[i].name);
                 printf("\nProcess %s with pid %d exited %s\n", pname, (int)pid, status != 0 ? "normally" : "abnormally");
-                childarr[i].cur_Status = 0;
                 printf("\033[1;32m%s\033[0m", getpromptline(PATH_CHD, PATH_CWD));
-
                 fflush(stdout);
-                // fgets("", MAX_INP_LEN, stdin);
-                // process_input("");
-                // printf("bruh\n");
+                for (int j = i; j < n_childs - 1; j++)
+                {
+                    childarr[j].pid = childarr[j + 1].pid;
+                    strcpy(childarr[j].name, childarr[j + 1].name);
+                }
+                n_childs--;
             }
         }
+        // for (int i = 0; i < n_childs; i++)
+        // {
+        //     printf("\npid = %d\n", childarr[i].pid);
+        // }
 
         // break;
     }
