@@ -1,0 +1,17 @@
+-rw-rw-r-- 1 ganesh ganesh 1119 Sep 28 20:04 bexec.c
+-rw-rw-r-- 1 ganesh ganesh  208 Sep 28 20:31 bexec.h
+-rw-rw-r-- 1 ganesh ganesh 1507 Sep 29 19:34 bg.c
+-rw-rw-r-- 1 ganesh ganesh 2091 Sep 28 16:01 cd.c
+-rw-rw-r-- 1 ganesh ganesh   67 Sep 28 16:01 cd.h
+-rw-rw-r-- 1 ganesh ganesh  285 Sep 28 16:01 echo.c
+-rw-rw-r-- 1 ganesh ganesh   61 Sep 28 16:01 echo.h
+-rw-rw-r-- 1 ganesh ganesh 1302 Oct  3 00:28 fexec.c
+-rw-rw-r-- 1 ganesh ganesh  204 Sep 28 22:03 fexec.h
+-rw-rw-r-- 1 ganesh ganesh 2472 Sep 30 15:43 fg.c
+-rw-rw-r-- 1 ganesh ganesh 2999 Sep 28 16:01 history.c
+-rw-rw-r-- 1 ganesh ganesh 2209 Sep 29 19:59 jobs.c
+-rw-rw-r-- 1 ganesh ganesh 8067 Sep 28 16:01 ls.c
+-rw-rw-r-- 1 ganesh ganesh 2202 Sep 28 16:01 pinfo.c
+-rw-rw-r-- 1 ganesh ganesh  450 Sep 28 16:01 pwd.c
+-rw-rw-r-- 1 ganesh ganesh  619 Sep 28 16:01 repeat.c
+-rw-rw-r-- 1 ganesh ganesh 2052 Sep 29 19:22 sig.c

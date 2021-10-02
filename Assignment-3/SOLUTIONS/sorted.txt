@@ -1,0 +1,4 @@
+Executable Path -- ~/HuSH
+memory -- 5267456
+pid -- 9922
+Process Status -- R+

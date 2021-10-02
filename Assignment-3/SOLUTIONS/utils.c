@@ -233,61 +233,6 @@ int check_redirections(char *command)
     }
 }
 
-void execute_command(char *COMMAND, int bg_bool)
-{
-    // printf("command given to execute|%s|\n", COMMAND);
-    char temp[1024] = "";
-    strcpy(temp, COMMAND);
-    if (check_redirections(temp) != 0)
-    {
-        // printf("Found redirections\n");
-        return;
-    }
-
-    char *c_arr[10];
-    int i = 0;
-
-    c_arr[0] = strtok(COMMAND, " \t");
-
-    // printf(":%s\n", c_arr[0]);
-    if (c_arr[0] != NULL)
-    {
-        while (c_arr[i] != NULL)
-            c_arr[++i] = strtok(NULL, " \t");
-        // printf("last word%s\n", c_arr[i - 1]);
-
-        if (strcmp(c_arr[0], "echo") == 0)
-            echo(c_arr);
-        else if (strcmp(c_arr[0], "cd") == 0)
-            cd(c_arr, HOME_PATH);
-        else if (strcmp(c_arr[0], "pwd") == 0)
-            pwd(c_arr, HOME_PATH);
-        else if (strcmp(c_arr[0], "history") == 0)
-            history(c_arr, HIST_PATH);
-        else if (strcmp(c_arr[0], "repeat") == 0)
-            repeat(c_arr);
-        else if (strcmp(c_arr[0], "pinfo") == 0)
-            pinfo(c_arr);
-        else if (strcmp(c_arr[0], "ls") == 0)
-            ls(c_arr);
-        else if (strcmp(c_arr[0], "exit") == 0)
-            exit(0);
-        else if (strcmp(c_arr[0], "jobs") == 0)
-            jobs(c_arr);
-        else if (strcmp(c_arr[0], "sig") == 0)
-            sig(c_arr);
-        else if (strcmp(c_arr[0], "bg") == 0)
-            bg(c_arr);
-        else if (strcmp(c_arr[0], "fg") == 0)
-            fg(c_arr);
-        else if (bg_bool)
-            bexec(c_arr);
-        else
-            fexec(c_arr);
-    }
-}
-char str_and[1024] = "";
-
 char *get_before_and(char *command)
 {
     int hash_arr[1024] = {0};
@@ -315,6 +260,118 @@ char *get_before_and(char *command)
     // printf("%s\n", subtext);
     // printf("%d %d %d\n", len, strt, end);
 }
+
+void handle_pipes(char *COMMAND)
+{
+    int n_pipes = 0;
+    char *c_arr[100];
+    c_arr[0] = strtok(COMMAND, "|");
+    while (c_arr[n_pipes] != NULL)
+        c_arr[++n_pipes] = strtok(NULL, "|");
+    n_pipes--;
+    int og_stdout = STDOUT_FILENO;
+    int og_stdin = STDIN_FILENO;
+
+    if (n_pipes == 0)
+    {
+        // printf("bruh\n");
+        get_before_and(c_arr[0]);
+        // return;
+    }
+    else
+    {
+        int all_fds[2 * n_pipes + 1];
+        for (int k = 0; k < n_pipes; k++)
+        {
+            if (pipe(all_fds + 2 * k) == -1)
+                printf("pipe Error\n");
+        }
+        int pid;
+        for (int i = 0; i < n_pipes + 1; i++)
+        {
+            pid = fork();
+            if (pid == 0)
+            {
+                if (i < n_pipes)
+                    dup2(all_fds[2 * i + 1], STDOUT_FILENO);
+
+                if (i > 0)
+                    dup2(all_fds[2 * (i - 1)], STDIN_FILENO);
+
+                for (int k = 0; k < 2 * n_pipes; k++)
+                    close(all_fds[k]);
+
+                // if (i == n_pipes)
+                //     dup2(og_stdout, STDOUT_FILENO);
+                // printf("%s gg\n", c_arr[i]);
+                char temp[1024] = "";
+                strcpy(temp, c_arr[i]);
+                get_before_and(temp);
+                exit(0);
+            }
+        }
+        for (int k = 0; k < 2 * n_pipes; k++)
+            close(all_fds[k]);
+        for (int k = 0; k < n_pipes + 1; k++)
+            wait(NULL);
+    }
+}
+
+void execute_command(char *COMMAND, int bg_bool)
+{
+    // printf("command given to execute|%s|\n", COMMAND);
+    char temp[1024] = "";
+    strcpy(temp, COMMAND);
+    if (check_redirections(temp) != 0)
+    {
+        // printf("Found redirections\n");
+        return;
+    }
+
+    char *c_arr[10];
+    int i = 0;
+
+    c_arr[0] = strtok(COMMAND, " \t");
+
+    // printf(":%s\n", c_arr[0]);
+    if (c_arr[0] != NULL)
+    {
+        while (c_arr[i] != NULL)
+            c_arr[++i] = strtok(NULL, " \t");
+        // printf("last word%s\n", c_arr[i - 1]);
+
+        if (strcmp(c_arr[0], "echo") == 0)
+            echo(c_arr);
+        else if (bg_bool)
+            bexec(c_arr);
+        else if (strcmp(c_arr[0], "cd") == 0)
+            cd(c_arr, HOME_PATH);
+        else if (strcmp(c_arr[0], "pwd") == 0)
+            pwd(c_arr, HOME_PATH);
+        else if (strcmp(c_arr[0], "history") == 0)
+            history(c_arr, HIST_PATH);
+        else if (strcmp(c_arr[0], "repeat") == 0)
+            repeat(c_arr);
+        else if (strcmp(c_arr[0], "pinfo") == 0)
+            pinfo(c_arr);
+        else if (strcmp(c_arr[0], "ls") == 0)
+            ls(c_arr);
+        else if (strcmp(c_arr[0], "exit") == 0)
+            exit(0);
+        else if (strcmp(c_arr[0], "jobs") == 0)
+            jobs(c_arr);
+        else if (strcmp(c_arr[0], "sig") == 0)
+            sig(c_arr);
+        else if (strcmp(c_arr[0], "bg") == 0)
+            bg(c_arr);
+        else if (strcmp(c_arr[0], "fg") == 0)
+            fg(c_arr);
+        else
+            fexec(c_arr);
+    }
+}
+
+char str_and[1024] = "";
 
 void process_input(char *input)
 {
@@ -345,8 +402,8 @@ void process_input(char *input)
 
         strcpy(copy_command, arr[j]);
         // printf("%d is %s|\n", j, copy_command);
-
-        get_before_and(copy_command);
+        handle_pipes(copy_command);
+        // get_before_and(copy_command);
         // execute_command(arr[j]);
         j++;
     }

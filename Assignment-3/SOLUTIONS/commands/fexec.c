@@ -1,6 +1,7 @@
 #include "fexec.h"
-#include "stdio.h"
-#include "string.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -17,7 +18,10 @@ void fexec(char *arr[]) // running a process in foreground
 
         int ret = execvp(arr[0], arr); // execute the command
         if (ret == -1)
+        {
             printf("%s :command not found\n", arr[0]);
+            exit(0);
+        }
         // printf("The current pid after executing is%d\n", getpid());
     }
     else
