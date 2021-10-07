@@ -301,9 +301,6 @@ void handle_pipes(char *COMMAND)
                 for (int k = 0; k < 2 * n_pipes; k++)
                     close(all_fds[k]);
 
-                // if (i == n_pipes)
-                //     dup2(og_stdout, STDOUT_FILENO);
-                // printf("%s gg\n", c_arr[i]);
                 char temp[1024] = "";
                 strcpy(temp, c_arr[i]);
                 get_before_and(temp);
