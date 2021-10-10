@@ -40,18 +40,32 @@ void replay(char *arr[])
         }
         // printf("command to be executed: %s\n", command);
 
+        // while (time < period)
+        // {
+        //     process_input(command);
+        //     if (time + interval <= period)
+        //     {
+        //         sleep(interval);
+        //         time = time + interval;
+        //     }
+        //     else
+        //     {
+        //         sleep(time + interval - period);
+        //         time = time + time + interval - period;
+        //     }
+        // }
         while (time < period)
         {
-            process_input(command);
             if (time + interval <= period)
             {
                 sleep(interval);
+                process_input(command);
                 time = time + interval;
             }
             else
             {
-                sleep(time + interval - period);
-                time = time + time + interval - period;
+                sleep(period - time);
+                break;
             }
         }
     }

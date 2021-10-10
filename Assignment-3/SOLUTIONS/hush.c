@@ -15,7 +15,7 @@ pid_t parent_pid;
 void launch_hush()
 {
 
-    printf("%d\n", getpid());
+    // printf("%d\n", getpid());
     while (1)
     {
         find_pwd(PATH_CWD);

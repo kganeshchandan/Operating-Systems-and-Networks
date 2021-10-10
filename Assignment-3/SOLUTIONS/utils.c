@@ -50,7 +50,7 @@ void init_childs()
 void sigint_handler(int signum)
 {
     printf("\n");
-    printf("%d lol \n", current_fg.pid);
+    // printf("%d lol \n", current_fg.pid);
     if (current_fg.pid == 0 | current_fg.pid == getpid())
         printf("\033[1;32m%s\033[0m", getpromptline(PATH_CHD, PATH_CWD));
 
@@ -63,14 +63,10 @@ void sigtstp_handler(int signum)
 {
     printf("\n");
     // printf("%s with pid %d is pushed to bg\n", current_fg.name, current_fg.pid);
-    printf("\033[1;32m%s\033[0m", getpromptline(PATH_CHD, PATH_CWD));
-    fflush(stdout);
+    if (current_fg.pid == 0 | current_fg.pid == getpid())
+        printf("\033[1;32m%s\033[0m", getpromptline(PATH_CHD, PATH_CWD));
 
-    // childarr[n_childs].pid = current_fg.pid;
-    // strcpy(childarr[n_childs].name, current_fg.name);
-    // childarr[n_childs].cur_Status = 1;
-    // n_childs++;
-    // return;
+    fflush(stdout);
 }
 
 void init_hist()

@@ -55,7 +55,7 @@ void fexec(char *arr[]) // running a process in foreground
             // printf("in %d\n", forkReturn);
             if (WIFSTOPPED(status))
             {
-                printf("%d is kil\n", forkReturn);
+                printf("\n");
                 childarr[n_childs].pid = forkReturn;
                 strcpy(childarr[n_childs].name, current_fg.name);
                 n_childs++;
