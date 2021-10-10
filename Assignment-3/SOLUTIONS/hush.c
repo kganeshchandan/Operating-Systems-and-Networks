@@ -3,13 +3,19 @@
 #include "utils.h"
 #include <signal.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 int MAX_INP_LEN = 1024;
 char PATH_CHD[1024];
 char PATH_CWD[1024];
 char BUFFER[1024];
+pid_t parent_pid;
+
 void launch_hush()
 {
+
+    printf("%d\n", getpid());
     while (1)
     {
         find_pwd(PATH_CWD);
@@ -21,6 +27,7 @@ void launch_hush()
             process_input(INPUT_LINE);
         else
         {
+            printf("\n");
             exit(0);
         }
     }

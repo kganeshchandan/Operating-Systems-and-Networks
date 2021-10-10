@@ -24,6 +24,7 @@
 #include "commands/sig.h"
 #include "commands/bg.h"
 #include "commands/fg.h"
+#include "commands/replay.h"
 
 char HOME_PATH[1024] = "";
 char *HIST_ARR[20][1024];
@@ -35,6 +36,7 @@ extern void launch_hush();
 extern struct childs childarr[1024];
 extern int n_childs;
 extern struct FG current_fg;
+extern pid_t parent_pid;
 
 void init_childs()
 {
@@ -48,20 +50,27 @@ void init_childs()
 void sigint_handler(int signum)
 {
     printf("\n");
-    printf("\033[1;32m%s\033[0m", getpromptline(PATH_CHD, PATH_CWD));
+    printf("%d lol \n", current_fg.pid);
+    if (current_fg.pid == 0 | current_fg.pid == getpid())
+        printf("\033[1;32m%s\033[0m", getpromptline(PATH_CHD, PATH_CWD));
+
     fflush(stdout);
+    current_fg.pid = getpid();
     return;
 }
 
 void sigtstp_handler(int signum)
 {
     printf("\n");
-    printf("%s with pid %d is pushed to bg\n", current_fg.name, current_fg.pid);
-    childarr[n_childs].pid = current_fg.pid;
-    strcpy(childarr[n_childs].name, current_fg.name);
-    childarr[n_childs].cur_Status = 0;
-    n_childs++;
-    return;
+    // printf("%s with pid %d is pushed to bg\n", current_fg.name, current_fg.pid);
+    printf("\033[1;32m%s\033[0m", getpromptline(PATH_CHD, PATH_CWD));
+    fflush(stdout);
+
+    // childarr[n_childs].pid = current_fg.pid;
+    // strcpy(childarr[n_childs].name, current_fg.name);
+    // childarr[n_childs].cur_Status = 1;
+    // n_childs++;
+    // return;
 }
 
 void init_hist()
@@ -341,6 +350,8 @@ void execute_command(char *COMMAND, int bg_bool)
             echo(c_arr);
         else if (bg_bool)
             bexec(c_arr);
+        else if (strcmp(c_arr[0], "replay") == 0)
+            replay(c_arr);
         else if (strcmp(c_arr[0], "cd") == 0)
             cd(c_arr, HOME_PATH);
         else if (strcmp(c_arr[0], "pwd") == 0)
