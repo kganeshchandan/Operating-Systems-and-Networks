@@ -46,7 +46,9 @@ void pinfo(char *arr[])
             c_arr[++i] = strtok(NULL, " ");
         }
         char sign[10] = "";
-        if (atoi(c_arr[4]) == atoi(c_arr[7])) // check if the process is running in foregorund to add +
+        // if (atoi(c_arr[4]) == atoi(c_arr[7])) // check if the process is running in foregorund to add +
+        // strcpy(sign, "+");
+        if (atoi(c_arr[0]) == getpid())
             strcpy(sign, "+");
         // print the required insof about the process
         printf("pid -- %s\n", c_arr[0]);

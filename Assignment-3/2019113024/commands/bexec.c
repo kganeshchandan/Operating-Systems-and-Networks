@@ -1,7 +1,10 @@
 #include "bexec.h"
+#include "fexec.h"
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 
 // extern struct childs childarr[1024];
@@ -21,7 +24,7 @@ void bexec(char *arr[]) // func to run the command in bg
         if (ret == -1)
         {
             printf("\n%s :command not found\n", arr[0]);
-            return;
+            exit(0);
         }
     }
     else
